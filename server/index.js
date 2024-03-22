@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
 app.post('/register', (req, res) => {
     return new Promise((resolve, reject) => {
         const data = req.body;
-        console.log(data, 'data on the body')
+        // console.log(data, 'data on the body')
         if (!data) return res.json({ message: 'User Data Missing' });
         try {
             sheets.spreadsheets.values.append({
