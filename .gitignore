@@ -1,0 +1,8 @@
+.nuxt/
+node_modules/
+.env
+
+.env**
+dist
+ca-certificate.crt
+cert/
