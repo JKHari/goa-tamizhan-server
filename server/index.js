@@ -51,7 +51,7 @@ app.post('/register', (req, res) => {
                     console.log(`can't append data to the sheet`)
                     return resolve(true);
                 } else {
-                    res.json({ message: 'Data added successfully 😎' });
+                    res.json({ success: true, message: 'Data added successfully 😎' });
                 }
             });
             return resolve(true);
