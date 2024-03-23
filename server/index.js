@@ -26,7 +26,7 @@ const sheets = google.sheets({ version: 'v4', auth });
 const spreadsheetId = process.env.SPREADSHEET_ID;
 
 app.get('/', (req, res) => {
-    res.send('Server is running');
+    res.send('Server is running 🚀');
 });
 
 
@@ -80,13 +80,17 @@ app.post('/register', (req, res) => {
 });
 
 
-async function slackNotification(data, date) {
+async function slackNotification(message, date) {
     console.log('sending slack notification....')
-    axios.post(`https://hooks.slack.com/services/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`, {
-        text: `New registration: \nName: ${data.name} \nNumber: ${data.number} \nDate: ${date}`
-    })
-        .then((response) => {
-            console.log('Slack notification sent successfully');
+    const url = 'https://hooks.slack.com/services/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'
+    const data = {
+        text: `New registration: \nName: ${message.name} \nNumber: ${message.number} \nDate: ${date}`
+    }
+    axios.post(url, data)
+        .then((res) => {
+            if (res.status === 200) {
+                console.log('Slack notification sent successfully 🚀')
+            }
         })
         .catch((error) => {
             console.error('Error while sending slack notification');
