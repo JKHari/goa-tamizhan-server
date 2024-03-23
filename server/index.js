@@ -3,7 +3,7 @@ import cors from 'cors';
 import * as dotenv from 'dotenv';
 import { google } from 'googleapis';
 import bodyParser from 'body-parser';
-
+import axios from 'axios';
 dotenv.config();
 
 const app = express();
@@ -31,9 +31,23 @@ app.get('/', (req, res) => {
 
 
 app.post('/register', (req, res) => {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         const data = req.body;
-        // console.log(data, 'data on the body')
+        // Given UTC timestamp
+        const utcTimestamp = new Date(`${data.date}`);
+
+        // Convert and format the UTC timestamp to IST (Indian Standard Time)
+        const formattedTimestamp = new Date(utcTimestamp.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' })).toLocaleString('en-IN', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            hour12: true,
+        });
+
+        console.log(formattedTimestamp); // Output: 12 Mar 2024 11:00 PM
+
         if (!data) return res.json({ message: 'User Data Missing' });
         try {
             sheets.spreadsheets.values.append({
@@ -42,7 +56,7 @@ app.post('/register', (req, res) => {
                 valueInputOption: 'USER_ENTERED',
                 requestBody: {
                     values: [
-                        [data.name, data.number, data.date]
+                        [data.name, data.number, formattedTimestamp]
                     ]
                 },
                 auth: auth
@@ -54,6 +68,7 @@ app.post('/register', (req, res) => {
                     res.json({ success: true, message: 'Data added successfully 😎' });
                 }
             });
+            await slackNotification(data, formattedTimestamp)
             return resolve(true);
         }
         catch (err) {
@@ -63,6 +78,20 @@ app.post('/register', (req, res) => {
         }
     });
 });
+
+
+async function slackNotification(data, date) {
+    console.log('sending slack notification....')
+    axios.post(`https://hooks.slack.com/services/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`, {
+        text: `New registration: \nName: ${data.name} \nNumber: ${data.number} \nDate: ${date}`
+    })
+        .then((response) => {
+            console.log('Slack notification sent successfully');
+        })
+        .catch((error) => {
+            console.error('Error while sending slack notification');
+        });
+}
 
 app.use('/', express.static('.output/public'));
 
