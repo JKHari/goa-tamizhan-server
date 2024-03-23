@@ -82,7 +82,7 @@ app.post('/register', (req, res) => {
 
 async function slackNotification(message, date) {
     console.log('sending slack notification....')
-    const url = 'https://hooks.slack.com/services/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'
+    const url = 'https://hooks.slack.com/services/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'
     const data = {
         text: `New registration: \nName: ${message.name} \nNumber: ${message.number} \nDate: ${date}`
     }
